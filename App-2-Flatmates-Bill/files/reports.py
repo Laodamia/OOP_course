@@ -20,7 +20,7 @@ class PdfReport:
         pdf.add_page()
 
         # Add icon
-        pdf.image("house.png", w=30,h=30)
+        pdf.image("Files/house.png", w=30,h=30)
 
         # Populate the pdf
         # set font
@@ -43,7 +43,7 @@ class PdfReport:
         pdf.cell(w=150, h=25, txt=flatmate2_pay, border=0)        # create cells with flatmates
 
         # generate pdf doc
-        pdf.output(self.filename)
+        pdf.output(f"Files/{self.filename}")
 
         # display the pdf automatically
-        webbrowser.open('file://' + os.path.realpath(self.filename))
+        webbrowser.open('file://' + os.path.realpath(f"Files/{self.filename}"))
