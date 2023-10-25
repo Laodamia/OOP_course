@@ -1,5 +1,5 @@
 from flat import Bill, Flatmate
-from reports import PdfReport
+from reports import PdfReport, FileSharer
 
 # get the user to give us the variables
 amount = float(input("Hey user, enter the bill amount: "))
@@ -20,3 +20,6 @@ print(f"{flatmate_2.name} pays:", round(flatmate_2.pays(bill, flatmate_1),2))
 # output the report
 pdf_report = PdfReport(filename=f"{bill.period}.pdf")
 pdf_report.generate(flatmate_1, flatmate_2, bill)
+
+file_sharer = FileSharer(filepath=f"Files/{pdf_report.filename}")
+print(file_sharer.share())
