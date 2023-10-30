@@ -14,8 +14,9 @@ class Canvas():
         else:
             data[:] = [255,255,255]
 
-        img = Image.fromarray(data, 'RGB')
-        img.save('canvas.png')
+        return data
+
+
 class Rectangle(Canvas):
 
     def __init__(self, x, y, width, height, color = (0,0,0)):
@@ -24,16 +25,24 @@ class Rectangle(Canvas):
         self.y = y
         self.color = color
 
-# class Square(Rectangle):
-#
-#     def __init__(self,x,y width, height, color):
-#         super().__init__(x,y,width,color)
-#         self.height = height
+    def draw(self, data):
+        data[self.y:self.y+self.height, self.x:self.x+self.width] = self.color
+        return data
 
 
+class Square(Rectangle):
 
+    def __init__(self,x,y, side_length, color=(0,0,0)):
+        super().__init__(x,y,side_length,side_length, color)
 
-c = Canvas(100,100, color = "black")
-print(c.draw())
-# b = Rectangle(x = 10, y =50, width=200, height=100, color="red")
-# print(b)
+c = Canvas(400,400, color = "black")
+canvas_background = c.draw()
+
+b = Rectangle(x = 10, y =50, width=200, height=100, color=(200,160,40))
+data = b.draw(canvas_background)
+
+s = Square(x=4, y=60, side_length=20, color=(160,170,3))
+data = s.draw(data)
+
+img = Image.fromarray(data, 'RGB')
+img.save('canvas.png')
