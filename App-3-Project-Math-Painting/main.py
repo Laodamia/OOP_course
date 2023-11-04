@@ -6,72 +6,83 @@ class Canvas():
          self.width = width
          self.height = height
          self.color = color
+         self.data = np.zeros((self.width, self.height,3), dtype=np.uint8)
 
-     def draw(self):
-        data = np.zeros((self.width, self.height,3), dtype=np.uint8)
-        if self.color == "black":
-            data[:] = [0,0,0]
-        else:
-            data[:] = [255,255,255]
+         if self.color == "black":
+             self.data[:] = [0,0,0]
+         else:
+             self.data[:] = [255,255,255]
+     def make(self, imagepath):
+         # create image
+         img = Image.fromarray(self.data, 'RGB')
+         # save image
+         img.save(imagepath)
 
-        return data
 
-
-class Rectangle(Canvas):
+class Rectangle:
 
     def __init__(self, x, y, width, height, color = (0,0,0)):
-        super().__init__(width, height)
+        self.width = width
+        self.height = height
         self.x = x
         self.y = y
         self.color = color
 
-    def draw(self, data):
+    def draw(self, canvas):
         # cover for the case when the shape goes off canvas bounds
-        if self.y+self.height >= Canvas.height:
-            y_slice = Canvas.height - self.y
-        if self.x+self.width >= Canvas.width:
-            x_slice = Canvas.width - self.x
-        else:
-            y_slice = self.y + self.height
-            x_slice = self.x + self.width
-        data[self.y:y_slice, self.x:x_slice] = self.color
-        return data
+        canvas.data[self.y:self.y + self.height, self.x:self.x + self.width] = self.color
 
+class Square:
 
-class Square(Rectangle):
+    def __init__(self, x, y, height, color=(0,0,0)):
+        self.x = x
+        self.y = y
+        self.height = height
+        self.color = color
 
-    def __init__(self,x,y, side_length, color=(0,0,0)):
-        super().__init__(x,y,side_length,side_length, color)
+    def draw(self, canvas):
+        canvas.data[self.y:self.y + self.height, self.x:self.x + self.height] = self.color
 
 # get the user to give input to create a canvas
 canvas_width = int(input("Enter canvas width in px: "))
 canvas_height = int(input("Enter canvas height in px: "))
 canvas_color = input("Enter canvas color (white or black): ")
-
 #instantiate a canvas
-c = Canvas(width=canvas_width,height=canvas_height, color = canvas_color)
+canvas = Canvas(width=canvas_width,height=canvas_height, color = canvas_color)
 
-#draw a canvas
-canvas_background = c.draw()
+while True:
+    # get choice of what to draw
+    # it has to go on until the user quits so this is not the right way to go
+    shape = input("What would you like to draw (rectangle or a square)? ")
+    if shape == "rectangle":
+        width = int(input(f"Enter the width of the {shape}: "))
+        height = int(input(f"Enter the height of the {shape}: "))
+        x_point = int(input(f"Enter x of the {shape}: "))
+        y_point = int(input(f"Enter y of the {shape}: "))
 
-# get choice of what to draw
-# it has to go on until the user quits so this is not the right way to go
-shape = input("what would you like to draw (rectangle or a square)? ")
-x_point = input(f"Enter x of the {shape}: ")
-y_point = input(f"Enter y of the {shape}: ")
+        # colours
+        red = int(input(f"How much red should the {shape} have? (0-255) "))
+        green = int(input(f"How much green should the {shape} have? (0-255) "))
+        blue = int(input(f"How much blue should the {shape} have? (0-255) "))
+        to_draw = Rectangle(x=x_point, y=y_point, width=width, height=height, color=(red,green, blue))
+        to_draw.draw(canvas)
 
-if shape == "rectangle":
-    width = input(f"Enter the width of the {shape}: ")
-    height = input(f"Enter the height of the {shape}: ")
-    b = Rectangle(x=x_point, y=y_point, width=width, height=height, color=(200,160,40))
-    data = b.draw(canvas_background)
-elif shape == "square":
-    side_length = input(f"Enter the height of the {shape}: ")
-    s = Square(x=x_point, y=y_point, side_length=side_length, color=(160,170,3))
-    data = s.draw(canvas_background)
+    elif shape == "square":
+        height = int(input(f"Enter the side of the {shape}: "))
+        x_point = int(input(f"Enter x of the {shape}: "))
+        y_point = int(input(f"Enter y of the {shape}: "))
+        red = int(input(f"How much red should the {shape} have? (0-255) "))
+        green = int(input(f"How much green should the {shape} have? (0-255) "))
+        blue = int(input(f"How much blue should the {shape} have? (0-255) "))
+        to_draw = Square(x=x_point, y=y_point, height=height, color=(red,green, blue))
+        to_draw.draw(canvas)
 
-# create image
-img = Image.fromarray(data, 'RGB')
+    else:
+        print("This is not a shape I like! Remember you can only enter 'rectangle' or 'square'.")
 
-#save image
-img.save('canvas.png')
+    quit = input("If you're finished press 'q', if you want to continue, press anything else. ")
+    if quit == 'q':
+        break
+
+canvas.make('canvas.png')
+
